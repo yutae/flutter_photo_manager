@@ -300,6 +300,8 @@
         }
 
         FlutterStandardTypedData *data = [FlutterStandardTypedData typedDataWithBytes:imageData];
+        
+        
 
         [handler reply:data];
     }];
