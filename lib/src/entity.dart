@@ -197,3 +197,10 @@ class AssetEntity {
     return "AssetEntity{id:$id}";
   }
 }
+
+class ICloudProgressEntity {
+  int width;
+  int height;
+  String assetId;
+  double progress;
+}

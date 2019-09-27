@@ -8,7 +8,7 @@
 @class PMAssetEntity;
 
 
-@interface ConvertUtils : NSObject
+@interface PMConvertUtils : NSObject
 
 + (NSDictionary *)convertPathToMap:(NSArray <PMAssetPathEntity *> *)array;
 
@@ -17,4 +17,6 @@
 + (NSDictionary *)convertPHAssetToMap:(PHAsset *)asset;
 
 + (NSDictionary *)convertPMAssetToMap:(PMAssetEntity *)asset;
+
++ (NSDictionary *)convertProgressToMap:(NSString *)id progress:(float)progress width:(int)width height:(int)height;
 @end

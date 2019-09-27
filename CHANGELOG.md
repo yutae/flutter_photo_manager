@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.4.4
+
+Add:
+
+- Support ICloud progress.
+
 ## 0.4.3
 
 Add:

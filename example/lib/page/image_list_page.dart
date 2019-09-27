@@ -28,7 +28,16 @@ class _GalleryContentListPageState extends State<GalleryContentListPage> {
   @override
   void initState() {
     super.initState();
+    PhotoManager.progress.addCallback(_onDownloadProgressChanged);
   }
+
+  @override
+  void dispose() {
+    PhotoManager.progress.removeCallback(_onDownloadProgressChanged);
+    super.dispose();
+  }
+
+  void _onDownloadProgressChanged(ICloudProgressEntity progressEntity) {}
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +48,15 @@ class _GalleryContentListPageState extends State<GalleryContentListPage> {
         return Scaffold(
           appBar: AppBar(
             title: Text("${path.name}"),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(
+                  Icons.info,
+                ),
+                onPressed: () {},
+                tooltip: "long tap item will delete asset from gallery",
+              ),
+            ],
           ),
           body: buildRefreshIndicator(length),
         );
@@ -84,7 +102,7 @@ class _GalleryContentListPageState extends State<GalleryContentListPage> {
         final f = await entity.file;
         final page = DetailPage(
           file: f,
-          entity:entity,
+          entity: entity,
         );
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (BuildContext context) {
@@ -135,6 +153,8 @@ class _GalleryContentListPageState extends State<GalleryContentListPage> {
         ],
       );
       showDialog(context: context, builder: (_) => dialog);
+    } else {
+      provider.delete(entity);
     }
   }
 }

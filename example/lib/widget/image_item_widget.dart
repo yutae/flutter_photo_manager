@@ -18,6 +18,24 @@ class ImageItemWidget extends StatefulWidget {
 
 class _ImageItemWidgetState extends State<ImageItemWidget> {
   @override
+  void initState() {
+    super.initState();
+    PhotoManager.progress.addCallback(_onProgress);
+  }
+
+  @override
+  void dispose() {
+    PhotoManager.progress.removeCallback(_onProgress);
+    super.dispose();
+  }
+
+  void _onProgress(ICloudProgressEntity entity) {
+    if (entity.assetId == widget.entity.id) {
+      print("download progress = ${entity.progress}");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final item = widget.entity;
     final size = 130;

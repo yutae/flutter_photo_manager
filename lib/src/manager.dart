@@ -5,8 +5,10 @@ Plugin _plugin = Plugin();
 /// use the class method to help user load asset list and asset info.
 ///
 /// 这个类可以获取
-class PhotoManager {
+class PhotoManager{
   static const MethodChannel _channel = const MethodChannel('image_scanner');
+
+  static ProgressNotifier progress = ProgressNotifier(_channel);
 
   /// in android WRITE_EXTERNAL_STORAGE  READ_EXTERNAL_STORAGE
   ///
@@ -49,7 +51,7 @@ class PhotoManager {
 
   /// get video asset
   /// open setting page
-  static void openSetting() {
+  static void openSetting() { 
     _plugin.openSetting();
   }
 

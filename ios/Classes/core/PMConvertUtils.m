@@ -3,12 +3,12 @@
 //
 
 #import <Photos/Photos.h>
-#import "ConvertUtils.h"
+#import "PMConvertUtils.h"
 #import "PMAssetPathEntity.h"
 #import "PHAsset+PHAsset_checkType.h"
 
 
-@implementation ConvertUtils {
+@implementation PMConvertUtils {
 
 }
 + (NSDictionary *)convertPathToMap:(NSArray <PMAssetPathEntity *> *)array {
@@ -32,7 +32,7 @@
     NSMutableArray *data = [NSMutableArray new];
 
     for (PMAssetEntity *asset in array) {
-        NSDictionary *item = [ConvertUtils convertPMAssetToMap:asset];
+        NSDictionary *item = [PMConvertUtils convertPMAssetToMap:asset];
         [data addObject:item];
     }
 
@@ -76,4 +76,12 @@
     };
 }
 
++ (NSDictionary *)convertProgressToMap:(NSString *)id progress:(float)progress width:(int)width height:(int)height {
+    return @{
+            @"id": id,
+            @"progress": @(progress),
+            @"width": @(width),
+            @"height": @(height),
+    };
+}
 @end

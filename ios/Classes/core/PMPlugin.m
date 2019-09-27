@@ -6,7 +6,7 @@
 #import "PMPlugin.h"
 #import "PMManager.h"
 #import "ResultHandler.h"
-#import "ConvertUtils.h"
+#import "PMConvertUtils.h"
 #import "PMAssetPathEntity.h"
 #import "PMLogUtils.h"
 #import "PMNotificationManager.h"
@@ -21,7 +21,9 @@
 
     FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:@"top.kikt/photo_manager" binaryMessenger:[registrar messenger]];
     PMPlugin *plugin = [PMPlugin new];
-    [plugin setManager:[PMManager new]];
+    PMManager *manager = [PMManager new];
+    [manager bindChannel:channel];
+    [plugin setManager:manager];
     [channel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
         [plugin onMethodCall:call result:result];
     }];
@@ -71,7 +73,7 @@
         BOOL hasAll = [call.arguments[@"hasAll"] boolValue];
         NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp / 1000];
         NSArray<PMAssetPathEntity *> *array = [manager getGalleryList:type date:date hasAll:hasAll];
-        NSDictionary *dictionary = [ConvertUtils convertPathToMap:array];
+        NSDictionary *dictionary = [PMConvertUtils convertPathToMap:array];
         [handler reply:dictionary];
 
     } else if ([call.method isEqualToString:@"getAssetWithGalleryId"]) {
@@ -84,7 +86,7 @@
         NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp / 1000];
 
         NSArray<PMAssetEntity *> *array = [manager getAssetEntityListWithGalleryId:id type:type page:page pageCount:pageCount date:date];
-        NSDictionary *dictionary = [ConvertUtils convertAssetToMap:array];
+        NSDictionary *dictionary = [PMConvertUtils convertAssetToMap:array];
         [handler reply:dictionary];
 
     } else if ([call.method isEqualToString:@"getAssetListWithRange"]) {
@@ -97,7 +99,7 @@
         unsigned long timestamp = [call.arguments[@"timestamp"] unsignedLongValue];
         NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp / 1000];
         NSArray<PMAssetEntity *> *array = [manager getAssetEntityListWithRange:galleryId type:type start:start end:end date:date];
-        NSDictionary *dictionary = [ConvertUtils convertAssetToMap:array];
+        NSDictionary *dictionary = [PMConvertUtils convertAssetToMap:array];
         [handler reply:dictionary];
 
     } else if ([call.method isEqualToString:@"getThumb"]) {
@@ -132,7 +134,7 @@
 
         PMAssetPathEntity *pathEntity = [manager fetchPathProperties:id type:requestType date:date];
         if (pathEntity) {
-            NSDictionary *dictionary = [ConvertUtils convertPathToMap:@[pathEntity]];
+            NSDictionary *dictionary = [PMConvertUtils convertPathToMap:@[pathEntity]];
             [handler reply:dictionary];
         } else {
             [handler reply:nil];
@@ -164,7 +166,7 @@
         NSString *desc = call.arguments[@"desc"];
 
         [manager saveImage:data title:title desc:desc block:^(PMAssetEntity *asset) {
-            NSDictionary *resultData = [ConvertUtils convertPMAssetToMap:asset];
+            NSDictionary *resultData = [PMConvertUtils convertPMAssetToMap:asset];
             [handler reply:@{@"data": resultData}];
         }];
 
@@ -174,7 +176,7 @@
         NSString *desc = call.arguments[@"desc"];
 
         [manager saveVideo:videoPath title:title desc:desc block:^(PMAssetEntity *asset) {
-            NSDictionary *resultData = [ConvertUtils convertPMAssetToMap:asset];
+            NSDictionary *resultData = [PMConvertUtils convertPMAssetToMap:asset];
             [handler reply:@{@"data": resultData}];
         }];
 

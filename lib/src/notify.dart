@@ -9,7 +9,7 @@ class _NotifyManager {
 
   /// callbacks
   var notifyCallback = <ValueChanged<MethodCall>>[];
-
+  
   /// add callback
   void addCallback(ValueChanged<MethodCall> callback) =>
       notifyCallback.add(callback);

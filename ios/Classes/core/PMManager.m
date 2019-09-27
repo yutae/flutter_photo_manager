@@ -9,11 +9,16 @@
 #import "PMCacheContainer.h"
 #import "ResultHandler.h"
 #import "PMLogUtils.h"
+#import "PMCloudProgressManager.h"
+#import "PMConvertUtils.h"
 
 
 @implementation PMManager {
     BOOL __isAuth;
     PMCacheContainer *cacheContainer;
+    PMCloudProgressManager *progressManager;
+
+    FlutterMethodChannel *methodChannel;
 }
 
 - (instancetype)init {
@@ -21,11 +26,25 @@
     if (self) {
         __isAuth = NO;
         cacheContainer = [PMCacheContainer new];
+        progressManager = [PMCloudProgressManager new];
     }
 
     return self;
 }
 
+
+#pragma mark init progress notifier
+
+- (void)bindChannel:(FlutterMethodChannel *)channel {
+    methodChannel = channel;
+}
+
+- (void)notifyProgress:(NSString *)id progress:(float)progress width:(int)width height:(int)height {
+    NSDictionary *result = [PMConvertUtils convertProgressToMap:id progress:progress width:width height:height];
+    [methodChannel invokeMethod:@"iCloudProgress" arguments:result];
+}
+
+#pragma mark some properties
 
 - (BOOL)isAuth {
     return __isAuth;
@@ -35,6 +54,7 @@
     __isAuth = auth;
 }
 
+#pragma mark scan gallery
 - (NSArray<PMAssetPathEntity *> *)getGalleryList:(int)type date:(NSDate *)date hasAll:(BOOL)hasAll {
     NSMutableArray <PMAssetPathEntity *> *array = [NSMutableArray new];
 
@@ -85,7 +105,6 @@
 }
 
 #pragma clang diagnostic pop
-
 - (NSArray<PMAssetEntity *> *)getAssetEntityListWithGalleryId:(NSString *)id type:(int)type page:(NSUInteger)page
                                                     pageCount:(NSUInteger)pageCount date:(NSDate *)date {
     NSMutableArray<PMAssetEntity *> *result = [NSMutableArray new];
@@ -211,6 +230,7 @@
     [cacheContainer clearCache];
 }
 
+#pragma mark get image data
 - (void)getThumbWithId:(NSString *)id width:(NSUInteger)width height:(NSUInteger)height
          resultHandler:(ResultHandler *)handler {
     PMAssetEntity *entity = [self getAssetEntity:id];
@@ -229,6 +249,7 @@
     PHImageRequestOptions *options = [PHImageRequestOptions new];
     [options setNetworkAccessAllowed:YES];
     [options setProgressHandler:^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
+        [self setProgressWithId:asset.localIdentifier progress:(float) progress width:width height:height];
         if (progress == 1.0) {
             [self fetchThumb:asset width:width height:height resultHandler:handler];
         }
@@ -248,6 +269,7 @@
         NSData *imageData = UIImageJPEGRepresentation(result, 0.95);
         FlutterStandardTypedData *data = [FlutterStandardTypedData typedDataWithBytes:imageData];
         [handler reply:data];
+        [self clearProgress:asset.localIdentifier width:width height:height];
     }];
 }
 
@@ -328,6 +350,7 @@
 
     [options setNetworkAccessAllowed:YES];
     [options setProgressHandler:^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
+        [self setProgressWithId:asset.localIdentifier progress:(float) progress width:asset.pixelWidth height:asset.pixelHeight];
         if (progress == 1.0) {
             [self fetchFullSize:asset resultHandler:handler];
         }
@@ -351,6 +374,7 @@
         [UIImageJPEGRepresentation(image, 1.0) writeToFile:path atomically:YES];
 
         [handler reply:path];
+        [self clearProgress:asset.localIdentifier width:asset.pixelWidth height:asset.pixelHeight];
     }];
 }
 
@@ -448,6 +472,24 @@
             block(nil);
         }
     }];
+}
+
+#pragma mark about icloud progress
+
+- (void)setProgressWithId:(NSString *)id progress:(float)progress width:(int)width height:(int)height {
+    CGSize size = CGSizeMake(width, height);
+    [progressManager setProgress:[PMCloudProgressKey progressWithId:id size:size] progress:progress];
+    [self notifyProgress:id progress:progress width:width height:height];
+}
+
+- (float)getProgress:(NSString *)id width:(int)width height:(int)height {
+    CGSize size = CGSizeMake(width, height);
+    return [progressManager getProgress:[PMCloudProgressKey progressWithId:id size:size]];
+}
+
+- (void)clearProgress:(NSString *)id width:(int)width height:(int)height {
+    CGSize size = CGSizeMake(width, height);
+    [progressManager removeProgress:[PMCloudProgressKey progressWithId:id size:size]];
 }
 
 @end

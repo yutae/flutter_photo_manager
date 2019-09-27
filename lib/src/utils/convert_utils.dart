@@ -63,4 +63,12 @@ class ConvertUtils {
 
     return entity;
   }
+
+  static ICloudProgressEntity convertProgressToEntity(Map args) {
+    return ICloudProgressEntity()
+      ..assetId = args["id"]
+      ..width = args["width"]
+      ..height = args["height"]
+      ..progress = args["progress"];
+  }
 }

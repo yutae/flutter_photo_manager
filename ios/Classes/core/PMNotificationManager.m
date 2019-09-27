@@ -4,7 +4,7 @@
 
 #import <Flutter/Flutter.h>
 #import "PMNotificationManager.h"
-#import "ConvertUtils.h"
+#import "PMConvertUtils.h"
 #import <Photos/PHPhotoLibrary.h>
 #import <Photos/Photos.h>
 
@@ -64,7 +64,7 @@
 - (void)onAssetChanged:(PHAsset *)asset {
     [channel invokeMethod:@"change" arguments:
             @{
-                    @"ios-asset": [ConvertUtils convertPHAssetToMap:asset]
+                    @"ios-asset": [PMConvertUtils convertPHAssetToMap:asset]
             }
     ];
 }
