@@ -127,4 +127,6 @@ class PathProvider extends ChangeNotifier {
   void printListLength(String tag) {
     print("$tag length : ${list.length}");
   }
+
+  bool isScrolling = false;
 }

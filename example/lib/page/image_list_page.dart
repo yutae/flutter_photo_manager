@@ -153,7 +153,7 @@ class _GalleryContentListPageState extends State<GalleryContentListPage> {
         ],
       );
       showDialog(context: context, builder: (_) => dialog);
-    } else {
+    } else if (Platform.isIOS) {
       provider.delete(entity);
     }
   }
