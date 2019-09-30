@@ -79,6 +79,19 @@ class Plugin {
     });
   }
 
+  Future<int> getFileSize(String id) {
+    if (Platform.isIOS) {
+      return _channel.invokeMethod("getFileSize", {
+        "id": id,
+      });
+    } else {
+      throw PlatformException(
+        code: 'NOT_SUPPORT_PLATFORM',
+        message: 'only for iOS platform',
+      );
+    }
+  }
+
   Future<Uint8List> getOriginBytes(String id) async {
     final path = await getFullFile(id, isOrigin: true);
     if (path == null) {

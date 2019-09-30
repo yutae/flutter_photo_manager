@@ -108,6 +108,11 @@
 
         [manager getThumbWithId:id width:width height:height resultHandler:handler];
 
+    } else if ([call.method isEqualToString:@"getFileSize"]) {
+        
+        NSString *id = call.arguments[@"id"];
+        [manager getFileSize:id resultHandler:handler];
+        
     } else if ([call.method isEqualToString:@"getFullFile"]) {
 
         NSString *id = call.arguments[@"id"];

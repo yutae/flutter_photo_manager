@@ -222,6 +222,17 @@
     }
 }
 
+- (void)getFileSize:(NSString *)id resultHandler:(ResultHandler *)handler {
+    PMAssetEntity *entity = [self getAssetEntity:id];
+    long long fileSize = [[[[PHAssetResource assetResourcesForAsset:entity.phAsset] firstObject] valueForKey:@"fileSize"] longLongValue];
+    NSNumber *number = [NSNumber numberWithLongLong:fileSize];
+    if (number != nil) {
+        [handler reply:number];
+    } else {
+        [handler reply:nil];
+    }
+}
+
 - (void)fetchThumb:(PHAsset *)asset width:(NSUInteger)width height:(NSUInteger)height
      resultHandler:(ResultHandler *)handler {
 
