@@ -246,8 +246,12 @@
         }
 
         NSData *imageData = UIImageJPEGRepresentation(result, 0.95);
-        FlutterStandardTypedData *data = [FlutterStandardTypedData typedDataWithBytes:imageData];
-        [handler reply:data];
+        if (imageData != nil) {
+            FlutterStandardTypedData *data = [FlutterStandardTypedData typedDataWithBytes:imageData];
+            [handler reply:data];
+        } else {
+            [handler reply:nil];
+        }
     }];
 }
 
