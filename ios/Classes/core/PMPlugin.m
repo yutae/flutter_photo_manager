@@ -45,6 +45,9 @@
                 [handler reply:@0];
             }
         }];
+    } else if ([call.method isEqualToString:@"openSetting"]) {
+        [PMManager openSetting];
+        [handler reply: nil];
     } else if (manager.isAuth) {
         [self onAuth:call result:result];
     } else {
@@ -143,8 +146,6 @@
             [handler reply:nil];
         }
 
-    } else if ([call.method isEqualToString:@"openSetting"]) {
-        [PMManager openSetting];
     } else if ([call.method isEqualToString:@"notify"]) {
         BOOL notify = [call.arguments[@"notify"] boolValue];
         if (notify) {
